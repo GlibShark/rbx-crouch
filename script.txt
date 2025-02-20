@@ -1,0 +1,33 @@
+-- Пихать в StarterPlayerScripts
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local player = game.Players.LocalPlayer
+
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local crouching = false
+local defaultHeight = humanoid.HipHeight
+local crouchHeight = 1
+local crouchSpeed = 8
+
+local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+local function tweenHipHeight(newHeight)
+    local tween = TweenService:Create(humanoid, tweenInfo, {HipHeight = newHeight})
+    tween:Play()
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.C then
+        if crouching then
+            tweenHipHeight(defaultHeight)
+            humanoid.WalkSpeed = 16
+        else
+            tweenHipHeight(crouchHeight)
+            humanoid.WalkSpeed = crouchSpeed
+        end
+        crouching = not crouching
+    end
+end)
